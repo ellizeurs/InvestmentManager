@@ -118,11 +118,8 @@ class InvestmentManager():
         portfolio = session.query(models.Portfolio).get(1)
 
         if year:
-        # Defina as datas de início e fim do período
-            start_date = date(year, 1, 1)
-            end_date = date(year, 12, 31)
 
-            portfolio.print_year_diff(start_date, end_date)
+            portfolio.print_year_diff(year=year)
         else:
             portfolio.print_year_diff()
 
