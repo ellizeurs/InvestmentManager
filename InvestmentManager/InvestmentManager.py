@@ -122,9 +122,9 @@ class InvestmentManager():
             start_date = date(year, 1, 1)
             end_date = date(year, 12, 31)
 
-            portfolio.print_brokerage_notes_table(start_date, end_date)
+            portfolio.print_year_diff(start_date, end_date)
         else:
-            portfolio.print_brokerage_notes_table()
+            portfolio.print_year_diff()
 
     def taxas(self, year = None):
         if self.db_file != None:
