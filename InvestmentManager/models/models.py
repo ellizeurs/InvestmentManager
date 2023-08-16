@@ -1579,6 +1579,24 @@ class Portfolio(Base):
         # Imprimir a tabela formatada
         print(tabulate(table_data, headers=table_headers, tablefmt="pretty"))
 
+    def to_excel(self, filename, start_date = START_DATE, end_date = datetime.now().date()):
+        resume = self.get_resume(start_date, end_date)
+        notes = self.get_brokerage_notes_stocks(start_date, end_date)
+        notes_taxas = self.get_brokerage_notes(start_date, end_date)
+        stocks_swing_trade = self.get_ir_table_stock(start_date, end_date)
+        stocks_day_trade = self.get_ir_table_stock_day_trade(start_date, end_date)
+        fiis = self.get_ir_table_fii(start_date, end_date)
+        year_diff = self.get_year_diff(START_DATE, end_date.year)
+        with pd.ExcelWriter('output.xlsx') as writer:  
+            resume.to_excel(writer, sheet_name='Resumo')
+            notes.to_excel(writer, sheet_name='Notas')
+            notes_taxas.to_excel(writer, sheet_name='Taxas')
+            stocks_swing_trade.to_excel(writer, sheet_name='IR - Ações, BDRs e ETFs')
+            stocks_day_trade.to_excel(writer, sheet_name='IR - Ações, BDRs e ETFs - Day Trade')
+            fiis.to_excel(writer, sheet_name='IR - FIIs e FIAGROs')
+            year_diff.to_excel(writer, sheet_name='Bens e Direitos')
+
+
 class Stock(Base):
     __tablename__ = "stocks"
 

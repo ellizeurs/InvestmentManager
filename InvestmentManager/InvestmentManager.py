@@ -206,3 +206,27 @@ class InvestmentManager():
         portfolio.remove_brokerage_note(brokerage_note_number)
 
         session.commit()
+
+    def to_excel(self, filename = None, year = None):
+        if self.db_file != None:
+            engine = create_engine(self.db_file)
+            Session = sessionmaker(bind=engine)
+            session = Session()
+        else:
+            session = self.session
+
+        portfolio = session.query(models.Portfolio).get(1)
+
+        if not filename:
+            if year:
+                filename = "Investimentos-{:04d}.xlsx".format(year)
+            else:
+                filename = "Investimentos.xlsx"
+
+        if year:
+            start_date = date(year, 1, 1)
+            end_date = date(year, 12, 31)
+
+            portfolio.to_excel(filename,start_date, end_date)
+        else:
+            portfolio.to_excel(filename)
