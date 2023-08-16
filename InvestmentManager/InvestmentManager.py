@@ -77,7 +77,6 @@ class InvestmentManager():
         else:
             portfolio.print_ir_table_stock()
 
-
     def ir_table_stock_day_trade(self, year = None):
         if self.db_file != None:
             engine = create_engine(self.db_file)
@@ -164,7 +163,7 @@ class InvestmentManager():
             portfolio.print_brokerage_notes_table()
 
     
-    def create_db(self):
+    def create_db(self, username='name@gmail.com', name='Name'):
         engine = create_engine(self.db_file, echo=False)
         Base = declarative_base()
 
@@ -174,7 +173,7 @@ class InvestmentManager():
         Session = sessionmaker(bind=engine)
         session = Session()
 
-        new_user = models.User(username='name@gmail.com', name='Name')
+        new_user = models.User(username=username, name=name)
         session.add(new_user)
         session.commit()
 
