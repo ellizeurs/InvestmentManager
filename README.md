@@ -27,6 +27,32 @@ investments_manager.create_db('name@email.com', 'Name')
 investments_manager = InvestmentManager('db.sqlite')
 investments_manager.add_brokerage_note()
 ```
+This will produce behavior similar to this
+```bash
+Número da nota: 1234
+Corretora: Corr
+Data: 17/08/2023
+I.R.R.F.: 0
+Taxa de liquidação: 0.02
+Taxa de Registro: 0
+Taxa Termo/Opções: 0
+Taxa A.N.A.: 0
+Emolumentos: 0
+Corretagem: 0
+Taxa de Custódia: 0
+Impostos: 0
+Outros: 0
+Ações
+Simbolo: (S para salvar)PETR4
+Valor: 32
+Quantidade: 1
+Operação (V para venda e C para compra): C
+Simbolo: (S para salvar)BBAS3
+Valor: 48.20
+Quantidade: 2
+Operação (V para venda e C para compra): C
+Simbolo: (S para salvar)S
+```
 - Consult your records
     - Resume
     ```python
