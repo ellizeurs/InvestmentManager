@@ -18,9 +18,14 @@ from .. import InvestmentManager
 
 from ..const import *
 
-from ..functions import extract_numbers_from_symbol, add_business_days, read_brokerage_note
+from ..functions import (
+    extract_numbers_from_symbol,
+    add_business_days,
+    read_brokerage_note,
+)
 
 Base = declarative_base()
+
 
 class BrokerageNote(Base):
     __tablename__ = "brokerage_notes"
@@ -554,7 +559,7 @@ class Portfolio(Base):
             None,
         )
         session = Session.object_session(self)
-        
+
         if brokerage_note:
             for stock in brokerage_note.stocks:
                 session.delete(stock)
@@ -746,9 +751,9 @@ class Portfolio(Base):
             start_date=start_date, end_date=end_date
         ):
             session = Session.object_session(self)
-            pm, quantity = InvestmentManager.InvestmentManager(session=session).calculate_pm(
-                stock_symbol, start_date=start_date, end_date=end_date
-            )
+            pm, quantity = InvestmentManager.InvestmentManager(
+                session=session
+            ).calculate_pm(stock_symbol, start_date=start_date, end_date=end_date)
 
             stock = session.query(Stock).filter(Stock.symbol == stock_symbol).first()
 
@@ -796,7 +801,7 @@ class Portfolio(Base):
         df = pd.DataFrame(data)
         return df
 
-    def get_year_diff(self, start_date = START_DATE, year=datetime.now().date().year):
+    def get_year_diff(self, start_date=START_DATE, year=datetime.now().date().year):
         data = []
         valor_total = 0
         pm_total = 0
@@ -808,12 +813,12 @@ class Portfolio(Base):
             start_date=start_date, end_date=end_date_f
         ):
             session = Session.object_session(self)
-            pm_i, quantity_i = InvestmentManager.InvestmentManager(session=session).calculate_pm(
-                stock_symbol, start_date=start_date, end_date=end_date_i
-            )
-            pm_f, quantity_f = InvestmentManager.InvestmentManager(session=session).calculate_pm(
-                stock_symbol, start_date=start_date, end_date=end_date_f
-            )
+            pm_i, quantity_i = InvestmentManager.InvestmentManager(
+                session=session
+            ).calculate_pm(stock_symbol, start_date=start_date, end_date=end_date_i)
+            pm_f, quantity_f = InvestmentManager.InvestmentManager(
+                session=session
+            ).calculate_pm(stock_symbol, start_date=start_date, end_date=end_date_f)
 
             if quantity_i > 0 or quantity_f > 0:
                 pm_total_i = quantity_i * pm_i
@@ -822,8 +827,8 @@ class Portfolio(Base):
                 data.append(
                     {
                         "Ticker": stock_symbol,
-                        "Valor em " + end_date_i.strftime('%d/%m/%Y'): pm_total_i,
-                        "Valor em " + end_date_f.strftime('%d/%m/%Y'): pm_total_f,
+                        "Valor em " + end_date_i.strftime("%d/%m/%Y"): pm_total_i,
+                        "Valor em " + end_date_f.strftime("%d/%m/%Y"): pm_total_f,
                     }
                 )
 
@@ -1101,6 +1106,8 @@ class Portfolio(Base):
     def get_accumulated_loss_and_ir_stock(
         self, start_date=START_DATE, end_date=datetime.now().date()
     ):
+        if start_date == START_DATE:
+            start_date = self.get_first_date()
         loss = 0
         imposto_devido_acumulado = 0
         for year_l in range(start_date.year, end_date.year + 1):
@@ -1145,6 +1152,8 @@ class Portfolio(Base):
     def get_accumulated_loss_and_ir_stock_day_trade(
         self, start_date=START_DATE, end_date=datetime.now().date()
     ):
+        if start_date == START_DATE:
+            start_date = self.get_first_date()
         loss = 0
         imposto_devido_acumulado = 0
         for year_l in range(start_date.year, end_date.year + 1):
@@ -1187,6 +1196,8 @@ class Portfolio(Base):
     def get_accumulated_loss_and_ir_fii(
         self, start_date=START_DATE, end_date=datetime.now().date()
     ):
+        if start_date == START_DATE:
+            start_date = self.get_first_date()
         loss = 0
         imposto_devido_acumulado = 0
         for year_l in range(start_date.year, end_date.year + 1):
@@ -1295,8 +1306,12 @@ class Portfolio(Base):
         self, start_date=START_DATE, end_date=datetime.now().date()
     ):
         brokerage_notes = self.get_brokerage_notes_stocks(start_date, end_date)
-        brokerage_notes['Data do Pregão'] = pd.to_datetime(brokerage_notes['Data do Pregão'])
-        brokerage_notes['Data de Liquidação'] = pd.to_datetime(brokerage_notes['Data de Liquidação'])
+        brokerage_notes["Data do Pregão"] = pd.to_datetime(
+            brokerage_notes["Data do Pregão"]
+        )
+        brokerage_notes["Data de Liquidação"] = pd.to_datetime(
+            brokerage_notes["Data de Liquidação"]
+        )
 
         table_data = []
         for brokerage_note in brokerage_notes.iloc:
@@ -1304,8 +1319,8 @@ class Portfolio(Base):
                 [
                     brokerage_note["Nota"],
                     brokerage_note["Corretora"],
-                    brokerage_note["Data do Pregão"].strftime('%d/%m/%Y'),
-                    brokerage_note["Data de Liquidação"].strftime('%d/%m/%Y'),
+                    brokerage_note["Data do Pregão"].strftime("%d/%m/%Y"),
+                    brokerage_note["Data de Liquidação"].strftime("%d/%m/%Y"),
                     "C" if brokerage_note["C/V"] == STOCK_BUY else "V",
                     brokerage_note["Ticker"],
                     brokerage_note["Quantidade"],
@@ -1407,12 +1422,11 @@ class Portfolio(Base):
         stocks = self.get_year_diff(start_date, year)
 
         for stock in stocks.iloc:
-
             table_data.append(
                 [
                     stock[0],
-                    'R$ {:.2f}'.format(stock[1]),
-                    'R$ {:.2f}'.format(stock[2]),
+                    "R$ {:.2f}".format(stock[1]),
+                    "R$ {:.2f}".format(stock[2]),
                 ]
             )
 
@@ -1437,7 +1451,7 @@ class Portfolio(Base):
         for stock in stocks.iloc:
             table_data.append(
                 [
-                    stock["Mês"].strftime('%m/%Y'),
+                    stock["Mês"].strftime("%m/%Y"),
                     "R$ {:.2f}".format(stock["Alienações"])
                     if stock["Alienações"] != 0
                     else "---",
@@ -1468,7 +1482,7 @@ class Portfolio(Base):
                     "R$ {:.2f}".format(stock["Imposto a Pagar"])
                     if stock["Imposto a Pagar"] != 0
                     else "---",
-                    stock["Data de Pagamento"].strftime('%m/%Y')
+                    stock["Data de Pagamento"].strftime("%m/%Y")
                     if not pd.isnull(stock["Data de Pagamento"])
                     else "---",
                 ]
@@ -1495,7 +1509,7 @@ class Portfolio(Base):
         for stock in stocks.iloc:
             table_data.append(
                 [
-                    stock["Mês"].strftime('%m/%Y'),
+                    stock["Mês"].strftime("%m/%Y"),
                     "R$ {:.2f}".format(stock["Alienações"])
                     if stock["Alienações"] != 0
                     else "---",
@@ -1529,7 +1543,7 @@ class Portfolio(Base):
                     "R$ {:.2f}".format(stock["Imposto a Pagar"])
                     if stock["Imposto a Pagar"] != 0
                     else "---",
-                    stock["Data de Pagamento"].strftime('%m/%Y')
+                    stock["Data de Pagamento"].strftime("%m/%Y")
                     if not pd.isnull(stock["Data de Pagamento"])
                     else "---",
                 ]
@@ -1554,7 +1568,7 @@ class Portfolio(Base):
         for stock in stocks.iloc:
             table_data.append(
                 [
-                    stock["Mês"].strftime('%m/%Y'),
+                    stock["Mês"].strftime("%m/%Y"),
                     "R$ {:.2f}".format(stock["Alienações"])
                     if stock["Alienações"] != 0
                     else "---",
@@ -1576,7 +1590,7 @@ class Portfolio(Base):
                     "R$ {:.2f}".format(stock["Imposto a Pagar"])
                     if stock["Imposto a Pagar"] != 0
                     else "---",
-                    stock["Data de Pagamento"].strftime('%m/%Y')
+                    stock["Data de Pagamento"].strftime("%m/%Y")
                     if not pd.isnull(stock["Data de Pagamento"])
                     else "---",
                 ]
@@ -1589,10 +1603,7 @@ class Portfolio(Base):
         print(tabulate(table_data, headers=table_headers, tablefmt="pretty"))
 
     def get_first_date(self):
-        brokerage_notes_within_period = [
-            note
-            for note in self.brokerage_notes
-        ]
+        brokerage_notes_within_period = [note for note in self.brokerage_notes]
 
         brokerage_notes_within_period = sorted(
             brokerage_notes_within_period, key=lambda note: note.date
@@ -1603,12 +1614,9 @@ class Portfolio(Base):
         except:
             start_date = date(datetime.now().year, 1, 1)
         return start_date
-    
+
     def get_latest_date(self):
-        brokerage_notes_within_period = [
-            note
-            for note in self.brokerage_notes
-        ]
+        brokerage_notes_within_period = [note for note in self.brokerage_notes]
 
         brokerage_notes_within_period = sorted(
             brokerage_notes_within_period, key=lambda note: note.date
@@ -1620,10 +1628,15 @@ class Portfolio(Base):
             end_date = date(datetime.now().year, 12, 31)
         return end_date
 
-    def to_excel(self, filename = 'Investimentos.xlsx', start_date = START_DATE, end_date = datetime.now().date()):
+    def to_excel(
+        self,
+        filename="Investimentos.xlsx",
+        start_date=START_DATE,
+        end_date=datetime.now().date(),
+    ):
         if start_date == START_DATE:
             start_date = self.get_first_date()
-        
+
         resume = self.get_resume(start_date, end_date)
         notes = self.get_brokerage_notes_stocks(start_date, end_date)
         notes_taxas = self.get_brokerage_notes(start_date, end_date)
@@ -1631,14 +1644,16 @@ class Portfolio(Base):
         stocks_day_trade = self.get_ir_table_stock_day_trade(start_date, end_date)
         fiis = self.get_ir_table_fii(start_date, end_date)
         year_diff = self.get_year_diff(START_DATE, end_date.year)
-        with pd.ExcelWriter(filename) as writer:  
-            resume.to_excel(writer, sheet_name='Resumo')
-            notes.to_excel(writer, sheet_name='Notas')
-            notes_taxas.to_excel(writer, sheet_name='Taxas')
-            stocks_swing_trade.to_excel(writer, sheet_name='IR - Ações, BDRs e ETFs')
-            stocks_day_trade.to_excel(writer, sheet_name='IR - Ações, BDRs e ETFs - Day Trade')
-            fiis.to_excel(writer, sheet_name='IR - FIIs e FIAGROs')
-            year_diff.to_excel(writer, sheet_name='Bens e Direitos')
+        with pd.ExcelWriter(filename) as writer:
+            resume.to_excel(writer, sheet_name="Resumo")
+            notes.to_excel(writer, sheet_name="Notas")
+            notes_taxas.to_excel(writer, sheet_name="Taxas")
+            stocks_swing_trade.to_excel(writer, sheet_name="IR - Ações, BDRs e ETFs")
+            stocks_day_trade.to_excel(
+                writer, sheet_name="IR - Ações, BDRs e ETFs - Day Trade"
+            )
+            fiis.to_excel(writer, sheet_name="IR - FIIs e FIAGROs")
+            year_diff.to_excel(writer, sheet_name="Bens e Direitos")
 
 
 class Stock(Base):
@@ -1753,7 +1768,10 @@ class Stock(Base):
         sales_value = self.value * (self.quantity - day_trade)
         session = Session.object_session(self)
         gain_value = (
-            self.value - InvestmentManager.InvestmentManager(session=session).calculate_pm(self.symbol, end_date=self.brokerage_note.date)[0]
+            self.value
+            - InvestmentManager.InvestmentManager(session=session).calculate_pm(
+                self.symbol, end_date=self.brokerage_note.date
+            )[0]
         ) * (self.quantity - day_trade)
         return gain_value, sales_value
 
