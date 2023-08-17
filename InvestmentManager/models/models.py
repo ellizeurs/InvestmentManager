@@ -1427,6 +1427,21 @@ class Portfolio(Base):
     ):
         table_data = []
 
+        brokerage_notes_within_period = [
+            note
+            for note in self.brokerage_notes
+            if start_date <= (note.date) <= end_date
+        ]
+
+        brokerage_notes_within_period = sorted(
+            brokerage_notes_within_period, key=lambda note: note.date
+        )
+
+        try:
+            start_date = brokerage_notes_within_period[0].date
+        except:
+            start_date = date(end_date.year, 1, 1)
+
         stocks = self.get_ir_table_stock_day_trade(start_date, end_date)
         stocks["Data de Pagamento"] = pd.to_datetime(stocks["Data de Pagamento"])
         stocks["Mês"] = pd.to_datetime(stocks["Mês"])
@@ -1481,6 +1496,21 @@ class Portfolio(Base):
         self, start_date=START_DATE, end_date=datetime.now().date()
     ):
         table_data = []
+
+        brokerage_notes_within_period = [
+            note
+            for note in self.brokerage_notes
+            if start_date <= (note.date) <= end_date
+        ]
+
+        brokerage_notes_within_period = sorted(
+            brokerage_notes_within_period, key=lambda note: note.date
+        )
+
+        try:
+            start_date = brokerage_notes_within_period[0].date
+        except:
+            start_date = date(end_date.year, 1, 1)
 
         stocks = self.get_ir_table_stock(start_date, end_date)
         stocks["Data de Pagamento"] = pd.to_datetime(stocks["Data de Pagamento"])
@@ -1538,6 +1568,21 @@ class Portfolio(Base):
     def print_ir_table_fii(self, start_date=START_DATE, end_date=datetime.now().date()):
         table_data = []
 
+        brokerage_notes_within_period = [
+            note
+            for note in self.brokerage_notes
+            if start_date <= (note.date) <= end_date
+        ]
+
+        brokerage_notes_within_period = sorted(
+            brokerage_notes_within_period, key=lambda note: note.date
+        )
+
+        try:
+            start_date = brokerage_notes_within_period[0].date
+        except:
+            start_date = date(end_date.year, 1, 1)
+
         stocks = self.get_ir_table_fii(start_date, end_date)
         stocks["Data de Pagamento"] = pd.to_datetime(stocks["Data de Pagamento"])
         stocks["Mês"] = pd.to_datetime(stocks["Mês"])
@@ -1579,7 +1624,22 @@ class Portfolio(Base):
         # Imprimir a tabela formatada
         print(tabulate(table_data, headers=table_headers, tablefmt="pretty"))
 
-    def to_excel(self, filename, start_date = START_DATE, end_date = datetime.now().date()):
+    def to_excel(self, filename = 'Investimentos.xlsx', start_date = START_DATE, end_date = datetime.now().date()):
+        brokerage_notes_within_period = [
+            note
+            for note in self.brokerage_notes
+            if start_date <= (note.date) <= end_date
+        ]
+
+        brokerage_notes_within_period = sorted(
+            brokerage_notes_within_period, key=lambda note: note.date
+        )
+
+        try:
+            start_date = brokerage_notes_within_period[0].date
+        except:
+            start_date = date(end_date.year, 1, 1)
+        
         resume = self.get_resume(start_date, end_date)
         notes = self.get_brokerage_notes_stocks(start_date, end_date)
         notes_taxas = self.get_brokerage_notes(start_date, end_date)
@@ -1587,7 +1647,7 @@ class Portfolio(Base):
         stocks_day_trade = self.get_ir_table_stock_day_trade(start_date, end_date)
         fiis = self.get_ir_table_fii(start_date, end_date)
         year_diff = self.get_year_diff(START_DATE, end_date.year)
-        with pd.ExcelWriter('output.xlsx') as writer:  
+        with pd.ExcelWriter(filename) as writer:  
             resume.to_excel(writer, sheet_name='Resumo')
             notes.to_excel(writer, sheet_name='Notas')
             notes_taxas.to_excel(writer, sheet_name='Taxas')
