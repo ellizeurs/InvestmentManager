@@ -43,6 +43,7 @@ investments_manager.add_brokerage_note()
     investments_manager = InvestmentManager('db.sqlite')
     investments_manager.impost(year) # If year is none, the entire period will be shown
     ```
+    **NOTE: Queries do not work with an empty DB**
 - Calculate IR
     - Stocks, ETFs e BDRs
         - Swing trade
