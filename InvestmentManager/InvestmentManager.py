@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 
 from datetime import datetime, date
 
@@ -182,10 +181,9 @@ class InvestmentManager:
 
     def create_db(self, username="name@gmail.com", name="Name"):
         engine = create_engine(self.db_file, echo=False)
-        Base = declarative_base()
 
         # Crie as tabelas no banco de dados
-        Base.metadata.create_all(engine)
+        models.Base.metadata.create_all(engine)
 
         Session = sessionmaker(bind=engine)
         session = Session()
