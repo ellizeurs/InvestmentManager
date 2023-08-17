@@ -437,8 +437,8 @@ class Portfolio(Base):
         except:
             stocks = []
 
-        print("Ações")
         for stock in stocks:
+            print("Ações")
             label = "Simbolo"
             try:
                 label += (
