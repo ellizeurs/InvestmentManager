@@ -78,6 +78,11 @@ class BrokerageNote(Base):
             total += stock.value * stock.quantity
         return total
 
+    def split(self, symbol, ratio = 1, type = 's'):
+        for stock in self.stocks:
+            if stock.symbol == symbol:
+                stock.split(ratio, type)
+
     def get_total_value_sale_swing_trade(self):
         total = 0
         for stock in self.stocks:
@@ -579,6 +584,10 @@ class Portfolio(Base):
                 unique_symbols.add(stock.symbol)
 
         return sorted(list(unique_symbols))
+
+    def split(self, symbol, ratio = 1, type = 's'):
+        for brokerage_note in self.brokerage_notes:
+            brokerage_note.split(symbol, ratio, type)
 
     def get_unique_symbols_in_date_range(
         self, start_date=START_DATE, end_date=datetime.now().date()
@@ -1883,6 +1892,10 @@ class Stock(Base):
             + self.get_outros()
             + self.get_irrf()
         )
+
+    def split(self, ratio = 1, type = 's'):
+        self.value = self.value * (ratio**(-1 if type == 's' or type == 'S' else 1))
+        self.quantity = self.quantity * (ratio**(1 if type == 's' or type == 'S' else -1))
 
 
 class User(Base):
