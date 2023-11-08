@@ -296,5 +296,6 @@ class InvestmentManager:
         portfolio = session.query(models.Portfolio).get(1)
         portfolio.split(symbol, ratio, type)
 
+        session.commit()
         if self.db_file != None:
             session.close()
