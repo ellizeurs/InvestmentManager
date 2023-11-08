@@ -62,6 +62,9 @@ class InvestmentManager:
                 total_quantity -= quantity
                 price_average = price_average if total_quantity > 0 else 0
 
+        if self.db_file != None:
+            session.close()
+
         return price_average, total_quantity
 
     def resume(self, year=None):
@@ -78,6 +81,9 @@ class InvestmentManager:
         else:
             portfolio.print_resume()
 
+        if self.db_file != None:
+            session.close()
+
     def ir_table_stock_swing_trade(self, year=None):
         if self.db_file != None:
             engine = create_engine(self.db_file)
@@ -93,6 +99,9 @@ class InvestmentManager:
             )
         else:
             portfolio.print_ir_table_stock()
+
+        if self.db_file != None:
+            session.close()
 
     def ir_table_stock_day_trade(self, year=None):
         if self.db_file != None:
@@ -111,6 +120,9 @@ class InvestmentManager:
         else:
             portfolio.print_ir_table_stock_day_trade()
 
+        if self.db_file != None:
+            session.close()
+
     def ir_table_fii(self, year=None):
         if self.db_file != None:
             engine = create_engine(self.db_file)
@@ -128,6 +140,9 @@ class InvestmentManager:
         else:
             portfolio.print_ir_table_fii()
 
+        if self.db_file != None:
+            session.close()
+
     def year_diff(self, year=None):
         if self.db_file != None:
             engine = create_engine(self.db_file)
@@ -142,6 +157,9 @@ class InvestmentManager:
             portfolio.print_year_diff(year=year)
         else:
             portfolio.print_year_diff()
+
+        if self.db_file != None:
+            session.close()
 
     def impost(self, year=None):
         if self.db_file != None:
@@ -161,6 +179,9 @@ class InvestmentManager:
         else:
             portfolio.print_broker_notes_taxas_table()
 
+        if self.db_file != None:
+            session.close()
+
     def brokerage_notes(self, year=None):
         if self.db_file != None:
             engine = create_engine(self.db_file)
@@ -178,6 +199,9 @@ class InvestmentManager:
             portfolio.print_brokerage_notes_table(start_date, end_date)
         else:
             portfolio.print_brokerage_notes_table()
+
+        if self.db_file != None:
+            session.close()
 
     def create_db(self, username="name@gmail.com", name="Name"):
         engine = create_engine(self.db_file, echo=False)
@@ -197,6 +221,9 @@ class InvestmentManager:
         user.add_portfolio()
         session.commit()
 
+        if self.db_file != None:
+            session.close()
+
     def add_brokerage_note(self):
         if self.db_file != None:
             engine = create_engine(self.db_file)
@@ -210,6 +237,9 @@ class InvestmentManager:
         portfolio.create_brokerage_note()
 
         session.commit()
+    
+        if self.db_file != None:
+            session.close()
 
     def delete_brokerage_note(self, brokerage_note_number):
         if self.db_file != None:
@@ -224,6 +254,9 @@ class InvestmentManager:
         portfolio.remove_brokerage_note(brokerage_note_number)
 
         session.commit()
+
+        if self.db_file != None:
+            session.close()
 
     def to_excel(self, filename=None, year=None):
         if self.db_file != None:
@@ -248,3 +281,20 @@ class InvestmentManager:
             portfolio.to_excel(filename, start_date, end_date)
         else:
             portfolio.to_excel(filename)
+
+        if self.db_file != None:
+            session.close()
+
+    def split(self, symbol, ratio = 1, type = 's'):
+        if self.db_file != None:
+            engine = create_engine(self.db_file)
+            Session = sessionmaker(bind=engine)
+            session = Session()
+        else:
+            session = self.session
+
+        portfolio = session.query(models.Portfolio).get(1)
+        portfolio.split(symbol, ratio, type)
+
+        if self.db_file != None:
+            session.close()
