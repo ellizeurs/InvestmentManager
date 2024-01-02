@@ -1317,67 +1317,68 @@ class Portfolio(Base):
         self, start_date=START_DATE, end_date=datetime.now().date()
     ):
         brokerage_notes = self.get_brokerage_notes_stocks(start_date, end_date)
-        brokerage_notes["Data do Pregão"] = pd.to_datetime(
-            brokerage_notes["Data do Pregão"]
-        )
-        brokerage_notes["Data de Liquidação"] = pd.to_datetime(
-            brokerage_notes["Data de Liquidação"]
-        )
-
         table_data = []
-        for brokerage_note in brokerage_notes.iloc:
-            table_data.append(
-                [
-                    brokerage_note["Nota"],
-                    brokerage_note["Corretora"],
-                    brokerage_note["Data do Pregão"].strftime("%d/%m/%Y"),
-                    brokerage_note["Data de Liquidação"].strftime("%d/%m/%Y"),
-                    "C" if brokerage_note["C/V"] == STOCK_BUY else "V",
-                    brokerage_note["Ticker"],
-                    brokerage_note["Quantidade"],
-                    "R$ {:.2f}".format(brokerage_note["Preço"]),
-                    "R$ {:.2f}".format(brokerage_note["Valor da Operação"]),
-                    "R$ {:.2f}".format(brokerage_note["Taxas"])
-                    if brokerage_note["Taxas"] != 0
-                    else "---",
-                    "R$ {:.4f}".format(brokerage_note["Valor Liquido"])
-                    if brokerage_note["Valor Liquido"] != 0
-                    else "---",
-                    "R$ {:.4f}".format(brokerage_note["I.R.R.F."])
-                    if brokerage_note["I.R.R.F."] != 0
-                    else "---",
-                    "R$ {:.4f}".format(brokerage_note["Taxa de Liquidação"])
-                    if brokerage_note["Taxa de Liquidação"] != 0
-                    else "---",
-                    "R$ {:.4f}".format(brokerage_note["Taxa de Registro"])
-                    if brokerage_note["Taxa de Registro"] != 0
-                    else "---",
-                    "R$ {:.4f}".format(brokerage_note["Taxa Termo/Opções"])
-                    if brokerage_note["Taxa Termo/Opções"] != 0
-                    else "---",
-                    "R$ {:.4f}".format(brokerage_note["Taxa A.N.A."])
-                    if brokerage_note["Taxa A.N.A."] != 0
-                    else "---",
-                    "R$ {:.4f}".format(brokerage_note["Emolumentos"])
-                    if brokerage_note["Emolumentos"] != 0
-                    else "---",
-                    "R$ {:.4f}".format(brokerage_note["Corretagem"])
-                    if brokerage_note["Corretagem"] != 0
-                    else "---",
-                    "R$ {:.4f}".format(brokerage_note["Taxa Custódia"])
-                    if brokerage_note["Taxa Custódia"] != 0
-                    else "---",
-                    "R$ {:.4f}".format(brokerage_note["Impostos"])
-                    if brokerage_note["Impostos"] != 0
-                    else "---",
-                    "R$ {:.4f}".format(brokerage_note["Outros"])
-                    if brokerage_note["Outros"] != 0
-                    else "---",
-                    "---"
-                    if brokerage_note["Day-trade"] == 0
-                    else "{}x".format(brokerage_note["Day-trade"]),
-                ]
+        if len(brokerage_notes) > 0:
+            brokerage_notes["Data do Pregão"] = pd.to_datetime(
+                brokerage_notes["Data do Pregão"]
             )
+            brokerage_notes["Data de Liquidação"] = pd.to_datetime(
+                brokerage_notes["Data de Liquidação"]
+            )
+
+            for brokerage_note in brokerage_notes.iloc:
+                table_data.append(
+                    [
+                        brokerage_note["Nota"],
+                        brokerage_note["Corretora"],
+                        brokerage_note["Data do Pregão"].strftime("%d/%m/%Y"),
+                        brokerage_note["Data de Liquidação"].strftime("%d/%m/%Y"),
+                        "C" if brokerage_note["C/V"] == STOCK_BUY else "V",
+                        brokerage_note["Ticker"],
+                        brokerage_note["Quantidade"],
+                        "R$ {:.2f}".format(brokerage_note["Preço"]),
+                        "R$ {:.2f}".format(brokerage_note["Valor da Operação"]),
+                        "R$ {:.2f}".format(brokerage_note["Taxas"])
+                        if brokerage_note["Taxas"] != 0
+                        else "---",
+                        "R$ {:.4f}".format(brokerage_note["Valor Liquido"])
+                        if brokerage_note["Valor Liquido"] != 0
+                        else "---",
+                        "R$ {:.4f}".format(brokerage_note["I.R.R.F."])
+                        if brokerage_note["I.R.R.F."] != 0
+                        else "---",
+                        "R$ {:.4f}".format(brokerage_note["Taxa de Liquidação"])
+                        if brokerage_note["Taxa de Liquidação"] != 0
+                        else "---",
+                        "R$ {:.4f}".format(brokerage_note["Taxa de Registro"])
+                        if brokerage_note["Taxa de Registro"] != 0
+                        else "---",
+                        "R$ {:.4f}".format(brokerage_note["Taxa Termo/Opções"])
+                        if brokerage_note["Taxa Termo/Opções"] != 0
+                        else "---",
+                        "R$ {:.4f}".format(brokerage_note["Taxa A.N.A."])
+                        if brokerage_note["Taxa A.N.A."] != 0
+                        else "---",
+                        "R$ {:.4f}".format(brokerage_note["Emolumentos"])
+                        if brokerage_note["Emolumentos"] != 0
+                        else "---",
+                        "R$ {:.4f}".format(brokerage_note["Corretagem"])
+                        if brokerage_note["Corretagem"] != 0
+                        else "---",
+                        "R$ {:.4f}".format(brokerage_note["Taxa Custódia"])
+                        if brokerage_note["Taxa Custódia"] != 0
+                        else "---",
+                        "R$ {:.4f}".format(brokerage_note["Impostos"])
+                        if brokerage_note["Impostos"] != 0
+                        else "---",
+                        "R$ {:.4f}".format(brokerage_note["Outros"])
+                        if brokerage_note["Outros"] != 0
+                        else "---",
+                        "---"
+                        if brokerage_note["Day-trade"] == 0
+                        else "{}x".format(brokerage_note["Day-trade"]),
+                    ]
+                )
 
         # Definir os cabeçalhos da tabela
         table_headers = brokerage_notes.columns.values
