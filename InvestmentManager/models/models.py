@@ -660,8 +660,10 @@ class Portfolio(Base):
                 )
 
         df = pd.DataFrame(data)
-
-        df = df.sort_values(by=["Data do Pregão", "Nota"])
+        try:
+            df = df.sort_values(by=["Data do Pregão", "Nota"])
+        except:
+            pass
         return df
 
     def get_brokerage_notes(
